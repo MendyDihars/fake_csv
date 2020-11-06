@@ -88,35 +88,42 @@ const removeFile = path =>
     })
   })
 
+const writeLines = (path, lines, header = false) =>
+  new Promise((resolve, reject) => {
+    appendFile(path, Papa.unparse(lines, {
+      delimiter: '|',
+      header,
+      // quotes: true,
+      // quoteChar: '"',
+      newline: '\r\n'
+    }) + '\r\n')
+      .then(resolve)
+      .catch(reject)
+  })
+
 const run = async () => {
   const COUNT = 500000, INCREMENT = 10000;
   let path = 'C:\\Users\\mdihars\\Documents\\WORKSPACE\\FILES\\result.csv';
   console.log('path', path)
   await removeFile(path);
-  let a = [];
+  let lines = [];
   for (let i = 0; i < COUNT; i++) {
     let line = generateLine();
     // let line = Math.random() > 0.15 ? generateLine() : badLine();
-    a.push(line);
-    if (a.length === INCREMENT) {
-      await appendFile(path, Papa.unparse(a, {
-        delimiter: '|',
-        header: (i === 0),
-        // quotes: true,
-        // quoteChar: '"',
-        newline: '\r\n'
-      }) + '\r\n')
+    lines.push(line);
+    if (i === 0) {
+      await writeLines(path, lines, true);
+      lines = [];
+    }
+    if (lines.length === INCREMENT) {
+      await writeLines(path, lines);
       console.log('--> ', i + 1)
-      a = [];
+      lines = [];
     }
   }
-  await appendFile(path, Papa.unparse(a, {
-    delimiter: '|',
-    header: INCREMENT > COUNT,
-    // quotes: true,
-    // quoteChar: '"',
-    newline: '\r\n'
-  }) + '\r\n')
+  if (lines.length) {
+    await writeLines(path, lines);
+  }
 }
 
 run();
