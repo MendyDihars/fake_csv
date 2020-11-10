@@ -19,6 +19,35 @@ const lorem = new LoremIpsum({
 const randInt = (n = 10000) =>
   Math.floor(Math.random() * n)
 
+const randDoctor = () => {
+  const doctors = [
+    "Christopher Eccleston (9)",
+    "Colin Baker (6)",
+    "David Tennant (10)",
+    "Jodie Whittaker (13)",
+    "Jon Pertwee (3)",
+    "Math Smith (11)",
+    "Patrick Throughton (2)",
+    "Paul McGann",
+    "Peter Capaldi (12)",
+    "Peter Davison (5)",
+    "Silvester McCoy (7)",
+    "Tom Baker (4)",
+    "William Hartnell (1)"
+  ];
+
+  return doctors[randInt(doctors.length)];
+}
+
+const tooLongString = () => {
+  let str = [];
+  for (let i = 0; i < 5; i++) {
+    str.push(lorem.generateSentences(1));
+  }
+  return str.join (' ');
+}
+
+
 const badLine = () => {
   let line = generateLine();
   if (Math.random() > 0.5) {
@@ -43,7 +72,13 @@ const badLine = () => {
     line.phone = "654789";
   }
   if (Math.random() > 0.5) {
-    line.la_casa = "300001";
+    line.la_casa = "3005181811001";
+  }
+  if (Math.random() > 0.5) {
+    line.texte_libre = tooLongString();
+  }
+  if (Math.random() > 0.5) {
+    line.le_docteur = "Rowan Artkinson";
   }
   return line;
 }
@@ -63,7 +98,8 @@ const generateLine = () => {
       domain: 'np6.com'
     }),
     phone: `+336${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}`,
-    la_casa: `${randInt(83) + 10}${randInt(10) + 10}0`
+    la_casa: `${randInt(83) + 10}${randInt(10) + 10}0`,
+    le_docteur: randDoctor()
   }
 }
 const appendFile = (path, data) =>
@@ -102,14 +138,14 @@ const writeLines = (path, lines, header = false) =>
   })
 
 const run = async () => {
-  const COUNT = 500000, INCREMENT = 10000;
+  const COUNT = 10000, INCREMENT = 1000;
   let path = 'C:\\Users\\mdihars\\Documents\\WORKSPACE\\FILES\\result.csv';
   console.log('path', path)
   await removeFile(path);
   let lines = [];
   for (let i = 0; i < COUNT; i++) {
-    let line = generateLine();
-    // let line = Math.random() > 0.15 ? generateLine() : badLine();
+    // let line = generateLine();
+    let line = Math.random() > 0.15 ? generateLine() : badLine();
     lines.push(line);
     if (i === 0) {
       await writeLines(path, lines, true);
