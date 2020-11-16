@@ -1,0 +1,54 @@
+[
+  {
+    "value": "petit_truc_en_plus",
+    "type": "unicity"
+  },
+  {
+    "value": "texte_libre",
+    "type": "text"
+  },
+  {
+    "value": "numero_gagnant",
+    "type": "int"
+  },
+  {
+    "value": "taille_approximative",
+    "type": "float"
+  },
+  {
+    "value": "solde_souhaite",
+    "type": "money"
+  },
+  {
+    "value": "jour_j",
+    "type": "datetime"
+  },
+  {
+    "value": "hamlet",
+    "type": "boolean"
+  },
+  {
+    "value": "email",
+    "type": "email"
+  },
+  {
+    "value": "phone",
+    "type": "phone"
+  },
+  {
+    "value": "la_casa",
+    "type": "postcode"
+  },
+  {
+    "value": "le_docteur",
+    "type": "enum"
+  },
+  {
+    "value": "lien_myspace",
+    "type": "url"
+  },
+  {
+    "value": "avatar",
+    "type": "image"
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "value": "id_produit",
+    "type": "unicity"
+  },
+  {
+    "value": "nom",
+    "type": "string"
+  },
+  {
+    "value": "descriptif",
+    "type": "text"
+  },
+  {
+    "value": "prix",
+    "type": "money"
+  },
+  {
+    "value": "promotion_pourcentage",
+    "type": "int"
+  },
+  {
+    "value": "promotion_prix",
+    "type": "int"
+  },
+  {
+    "value": "categorie",
+    "type": "enum"
+  },
+  {
+    "value": "url_produit",
+    "type": "url"
+  },
+  {
+    "value": "url_image",
+    "type": "image"
+  },
+  {
+    "value": "stock",
+    "type": "boolean"
+  },
+  {
+    "value": "date_publication",
+    "type": "datetime"
+  },
+  {
+    "value": "score_top10",
+    "type": "int",
+    "max": 10
+  }
+]

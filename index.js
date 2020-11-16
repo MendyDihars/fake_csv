@@ -4,6 +4,7 @@ const { LoremIpsum } = require('lorem-ipsum');
 const randomEmail = require('random-email');
 const Papa = require('papaparse');
 const fs = require('fs');
+const args = require('minimist')(process.argv.slice(2));
 
 const lorem = new LoremIpsum({
   sentencesPerParagraph: {
@@ -19,24 +20,10 @@ const lorem = new LoremIpsum({
 const randInt = (n = 10000) =>
   Math.floor(Math.random() * n)
 
-const randDoctor = () => {
-  const doctors = [
-    "Christopher Eccleston (9)",
-    "Colin Baker (6)",
-    "David Tennant (10)",
-    "Jodie Whittaker (13)",
-    "Jon Pertwee (3)",
-    "Math Smith (11)",
-    "Patrick Throughton (2)",
-    "Paul McGann",
-    "Peter Capaldi (12)",
-    "Peter Davison (5)",
-    "Silvester McCoy (7)",
-    "Tom Baker (4)",
-    "William Hartnell (1)"
-  ];
+const randRef = () => {
+  const elements = require('./ref/' + (args.ref || "tardis") + ".json");
 
-  return doctors[randInt(doctors.length)];
+  return elements[randInt(elements.length)];
 }
 
 const tooLongString = () => {
@@ -47,60 +34,126 @@ const tooLongString = () => {
   return str.join (' ');
 }
 
+const randURL = type => {
+  let url = "https://";
+  url += (
+    uuid().replace('-', '').substr(0, 10)
+    + (type === "img" ? ".fr/image.jpg" : ".com")
+  );
+  return url;
+}
+
 
 const badLine = () => {
+  const fields = require('./config/' + (args.config || "tardis") + ".json");
   let line = generateLine();
-  if (Math.random() > 0.5) {
-    line.numero_gagnant = lorem.generateSentences(1);
-  }
-  if (Math.random() > 0.5) {
-    line.taille_approximative = 46811.258;
-  }
-  if (Math.random() > 0.5) {
-    line.solde_souhaite = 930154125540456.901;
-  }
-  if (Math.random() > 0.5) {
-    line.jour_j = moment().subtract(randInt(500), 'days').format('DD-MM-YYYY');
-  }
-  if (Math.random() > 0.5) {
-    line.hamlet = "zozo";
-  }
-  if (Math.random() > 0.5) {
-    line.email = "Moi";
-  }
-  if (Math.random() > 0.5) {
-    line.phone = "654789";
-  }
-  if (Math.random() > 0.5) {
-    line.la_casa = "3005181811001";
-  }
-  if (Math.random() > 0.5) {
-    line.texte_libre = tooLongString();
-  }
-  if (Math.random() > 0.5) {
-    line.le_docteur = "Rowan Artkinson";
-  }
+  fields.forEach(field => {
+    let data;
+    switch (field.type) {
+      case "unicity":
+        data = uuid();
+        break;
+      case "text":
+        data = tooLongString();
+        break;
+      case "string":
+        data = "";
+        break;
+      case "int":
+        data = "Chiffre";
+        break;
+      case "float":
+        data = 46811.258;
+        break;
+      case "money":
+        data = 930154125540456.901;
+        break;
+      case "datetime":
+        data = moment().subtract(randInt(500), 'days').format('DD-MM-YYYY');
+        break;
+      case "boolean":
+        data = "Schrodinger";
+        break;
+      case "email":
+        data = "moiarobasegmailpointcom";
+        break;
+      case "phone":
+        data = `666`;
+        break;
+      case "postcode":
+        data = `h3r3`;
+        break;
+      case "enum":
+        data = "Aligator";
+        break;
+      case "url":
+        data = "perdu.com";
+        break;
+      case "image":
+        data = "image.jpeg";
+        break;
+    }
+    if (Math.random() > 0.5) {
+      line[field.value] = data;
+    }
+  })
   return line;
 }
 
 const generateLine = () => {
   let n = parseFloat(`${randInt(100000)}.${randInt(999)}`);
   let date = moment().subtract(randInt(500), 'days');
-  return {
-    petit_truc_en_plus: uuid(),
-    texte_libre: lorem.generateSentences(1),
-    numero_gagnant: randInt(),
-    taille_approximative: `${randInt(50000)}.${randInt(99)}`,
-    solde_souhaite: Math.random() > 0.5 ? n : -Math.abs(n),
-    jour_j: date.format('YYYY-MM-DDTHH:mm:ss') + (date.isDST() ? '+02:00': '+01:00'),
-    hamlet: Math.random() >= 0.5,
-    email: randomEmail({
-      domain: 'np6.com'
-    }),
-    phone: `+336${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}`,
-    la_casa: `${randInt(83) + 10}${randInt(10) + 10}0`,
-    le_docteur: randDoctor()
-  }
+  const fields = require('./config/' + (args.config || 'tardis')  + ".json");
+  let line = {};
+  fields.forEach(field => {
+    let data;
+    switch (field.type) {
+      case "unicity":
+        data = uuid();
+        break;
+      case "text":
+        data = lorem.generateSentences(1);
+        break;
+      case "string":
+        data = lorem.generateSentences(1).substr(0, 10);
+        break;
+      case "int":
+        data = randInt(field.max || null);
+        break;
+      case "float":
+        data = `${randInt(50000)}.${randInt(99)}`;
+        break;
+      case "money":
+        data = Math.random() > 0.5 ? n : -Math.abs(n);
+        break;
+      case "datetime":
+        data = date.format('YYYY-MM-DDTHH:mm:ss') + (date.isDST() ? '+02:00': '+01:00');
+        break;
+      case "boolean":
+        data = Math.random() >= 0.5;
+        break;
+      case "email":
+        data = randomEmail({ domain: 'np6.com' });
+        break;
+      case "phone":
+        data = `+336${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}${randInt(89) + 10}`;
+        break;
+      case "postcode":
+        data = `${randInt(83) + 10}${randInt(10) + 10}0`;
+        break;
+      case "enum":
+        data = randRef();
+        break;
+      case "url":
+        data = randURL();
+        break;
+      case "image":
+        data = randURL('img');
+        break;
+    }
+    line[field.value] = data;
+  })
+  return line;
 }
 const appendFile = (path, data) =>
   new Promise((resolve, reject) => {
@@ -138,8 +191,8 @@ const writeLines = (path, lines, header = false) =>
   })
 
 const run = async () => {
-  const COUNT = 10000, INCREMENT = 1000;
-  let path = 'C:\\Users\\mdihars\\Documents\\WORKSPACE\\FILES\\result.csv';
+  const COUNT = 3000, INCREMENT = 500;
+  let path = args.filepath || 'C:\\Users\\mdihars\\Documents\\WORKSPACE\\FILES\\result.csv';
   console.log('path', path)
   await removeFile(path);
   let lines = [];
@@ -153,7 +206,7 @@ const run = async () => {
     }
     if (lines.length === INCREMENT) {
       await writeLines(path, lines);
-      console.log('--> ', i + 1)
+      console.log('--> ', i)
       lines = [];
     }
   }
