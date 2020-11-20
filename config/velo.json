@@ -13,15 +13,18 @@
   },
   {
     "value": "prix",
-    "type": "money"
+    "type": "money",
+    "noNegative": true
   },
   {
     "value": "promotion_pourcentage",
-    "type": "int"
+    "type": "int",
+    "max": 99
   },
   {
     "value": "promotion_prix",
-    "type": "int"
+    "type": "int",
+    "noNegative": true
   },
   {
     "value": "categorie",
@@ -37,15 +40,18 @@
   },
   {
     "value": "stock",
-    "type": "boolean"
+    "type": "int",
+    "max": 50
   },
   {
     "value": "date_publication",
-    "type": "datetime"
+    "type": "datetime",
+    "format": "YYYY-MM-DD"
   },
   {
     "value": "score_top10",
     "type": "int",
-    "max": 10
+    "max": 10,
+    "noNegative": true
   }
 ]

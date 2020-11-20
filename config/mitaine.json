@@ -1,0 +1,22 @@
+[
+  {
+    "value": "target_unicity",
+    "type": "unicity"
+  },
+  {
+    "value": "table_unicity",
+    "type": "string"
+  },
+  {
+    "value": "prenom",
+    "type": "string"
+  },
+  {
+    "value": "monnaie",
+    "type": "money"
+  },
+  {
+    "value": "tel",
+    "type": "phone"
+  }
+]

@@ -56,9 +56,6 @@ const badLine = () => {
       case "text":
         data = tooLongString();
         break;
-      case "string":
-        data = "";
-        break;
       case "int":
         data = "Chiffre";
         break;
@@ -93,7 +90,7 @@ const badLine = () => {
         data = "image.jpeg";
         break;
     }
-    if (Math.random() > 0.5) {
+    if (data && Math.random() > 0.5) {
       line[field.value] = data;
     }
   })
@@ -115,19 +112,23 @@ const generateLine = () => {
         data = lorem.generateSentences(1);
         break;
       case "string":
-        data = lorem.generateSentences(1).substr(0, 10);
+        data = uuid().substr(0, 8).replace('-', '');
         break;
       case "int":
-        data = randInt(field.max || null);
+        data = randInt(field.max || 10000) + (field.noNegative ? 1 : 0);
         break;
       case "float":
         data = `${randInt(50000)}.${randInt(99)}`;
         break;
       case "money":
-        data = Math.random() > 0.5 ? n : -Math.abs(n);
+        if (!field.noNegative) {
+          data = Math.random() > 0.5 ? n : -Math.abs(n);
+        } else {
+          data = n;
+        }
         break;
       case "datetime":
-        data = date.format('YYYY-MM-DDTHH:mm:ss') + (date.isDST() ? '+02:00': '+01:00');
+        data = date.format(field.format || 'YYYY-MM-DDTHH:mm:ss') + (field.format ? '' : (date.isDST() ? '+02:00': '+01:00'));
         break;
       case "boolean":
         data = Math.random() >= 0.5;
@@ -191,14 +192,18 @@ const writeLines = (path, lines, header = false) =>
   })
 
 const run = async () => {
-  const COUNT = 3000, INCREMENT = 500;
+  const COUNT = 50, INCREMENT = 10;
   let path = args.filepath || 'C:\\Users\\mdihars\\Documents\\WORKSPACE\\FILES\\result.csv';
   console.log('path', path)
   await removeFile(path);
   let lines = [];
   for (let i = 0; i < COUNT; i++) {
-    // let line = generateLine();
-    let line = Math.random() > 0.15 ? generateLine() : badLine();
+    let line;
+    if (args.noErrors) {
+      line = generateLine();
+    } else {
+      line = Math.random() > 0.15 ? generateLine() : badLine();
+    }
     lines.push(line);
     if (i === 0) {
       await writeLines(path, lines, true);
